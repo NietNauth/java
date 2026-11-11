@@ -1,4 +1,4 @@
-package com.test.qlph;
+package com.test.qlph.dto;
 
 public class RoomDTO {
     private String roomId;
