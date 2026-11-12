@@ -4,22 +4,31 @@ import com.test.qlph.constant.KaraokeConstant;
 import com.test.qlph.dto.EmployeeDTO;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Scanner;
+import java.util.UUID;
 
 public class EmployeeService {
-    private Scanner sc = new Scanner(System.in);
+    private Scanner sc = KaraokeConstant.sc;
+
+    private int employeeCounter = 0;
+
+    private String generateEmployeeCode() {
+        employeeCounter++;
+        return String.format("NV%03d", employeeCounter);
+    }
 
     public ArrayList<EmployeeDTO> getAll(){
         return KaraokeConstant.listEmployee;
     }
 
-    public EmployeeDTO getById(String employeeId){
+    public Optional<EmployeeDTO> getById(String employeeId){
         for(EmployeeDTO employeeDTO : KaraokeConstant.listEmployee){
-            if (employeeDTO.getEmployeeId().equalsIgnoreCase(employeeId)){
-                return employeeDTO;
+            if(employeeDTO.getEmployeeId().toString().equalsIgnoreCase(employeeId)){
+                return Optional.of(employeeDTO);
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     public void showAll(){
@@ -30,18 +39,21 @@ public class EmployeeService {
             return;
         }
         for(EmployeeDTO employeeDTO : KaraokeConstant.listEmployee){
-            System.out.println("STT: " + (stt++) + " | Ma: " + employeeDTO.getEmployeeId() + " | Ten: " + employeeDTO.getEmployeeName() + " | SDT: " + employeeDTO.getEmployeePhone() + "| Dia chi: " + employeeDTO.getEmployeeAddress() + " | Email: " + employeeDTO.getEmployeeEmail() + " | Luong: " + employeeDTO.getEmployeeSalary());
+            System.out.println("STT: " + (stt++) +  " | " + employeeDTO.toString() );
         }
     }
 
     public void addEmployee(){
         System.out.println("\n---Them nhan vien ---");
-        System.out.print("Nhap ma nhan vien: ");
-        String employeeId = sc.nextLine();
+        UUID employeeId;
+        EmployeeDTO emp = new EmployeeDTO();
 
-        if (getById(employeeId) != null){
-            System.out.println("Ma nhan vien da ton tai");
-        }
+        do {
+            employeeId = UUID.randomUUID();
+            emp.setEmployeeId(employeeId);
+        }while (KaraokeConstant.listEmployee.contains(emp));
+
+        String employeeCode = generateEmployeeCode();
 
         System.out.print("Nhap ten: ");
         String employeeName = sc.nextLine();
@@ -54,7 +66,7 @@ public class EmployeeService {
         System.out.print("Nhap luong: ");
         Long employeeSalary = Long.parseLong(sc.nextLine());
 
-        EmployeeDTO employeeDTO = new EmployeeDTO(employeeId, employeeName, employeePhone, employeeAddress, employeeEmail, employeeSalary);
+        EmployeeDTO employeeDTO = new EmployeeDTO(employeeId, employeeCode, employeeName, employeePhone, employeeAddress, employeeEmail, employeeSalary);
 
         KaraokeConstant.listEmployee.add(employeeDTO);
         System.out.println("Them nhan vien thanh cong");
@@ -65,12 +77,13 @@ public class EmployeeService {
         System.out.print("Nhap ma nhan vien can sua: ");
         String employeeId = sc.nextLine();
 
-        EmployeeDTO employeeDTO = getById(employeeId);
-        if (employeeDTO == null){
+        Optional<EmployeeDTO> employeeDTOOptional = getById(employeeId);
+        if(employeeDTOOptional.isEmpty()){
             System.out.println("Khong tim thay nhan vien");
             return;
         }
 
+        EmployeeDTO employeeDTO = employeeDTOOptional.get();
         System.out.print("Nhap ten moi: ");
         employeeDTO.setEmployeeName(sc.nextLine());
         System.out.print("Nhap dia chi moi: ");
@@ -90,13 +103,14 @@ public class EmployeeService {
         System.out.println("\n---Xoa nhan vien ---");
         System.out.print("Nhap ma nhan vien can xoa: ");
         String employeeId = sc.nextLine();
-        EmployeeDTO employeeDTO = getById(employeeId);
-        if (employeeDTO == null){
+
+        Optional<EmployeeDTO> employeeDTOOptional = getById(employeeId);
+        if(employeeDTOOptional.isEmpty()){
             System.out.println("Khong tim thay nhan vien");
             return;
         }
 
-        KaraokeConstant.listEmployee.remove(employeeDTO);
+        KaraokeConstant.listEmployee.remove(employeeDTOOptional.get());
         System.out.println("Xoa nhan vien thanh cong");
     }
 }

@@ -6,10 +6,12 @@ import com.test.qlph.dto.MenuDTO;
 import com.test.qlph.dto.RoomDTO;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 
-public class KaraokeConstant {
-    public static ArrayList<EmployeeDTO> listEmployee = new ArrayList<>();
-    public static ArrayList<BookingDTO> listBooking = new ArrayList<>();
-    public static ArrayList<RoomDTO> listRoom = new ArrayList<>();
-    public static ArrayList<MenuDTO> listMenu = new ArrayList<>();
+public final class KaraokeConstant {
+    public static final Scanner sc = new Scanner(System.in);
+    public static final ArrayList<EmployeeDTO> listEmployee = new ArrayList<>();
+    public static final ArrayList<BookingDTO> listBooking = new ArrayList<>();
+    public static final ArrayList<RoomDTO> listRoom = new ArrayList<>();
+    public static final ArrayList<MenuDTO> listMenu = new ArrayList<>();
 }
