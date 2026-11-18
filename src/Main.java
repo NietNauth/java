@@ -3,16 +3,20 @@ import com.test.qlph.service.BookingService;
 import com.test.qlph.service.EmployeeService;
 import com.test.qlph.service.MenuService;
 import com.test.qlph.service.RoomService;
+import com.test.qlph.serviceimpl.BookingServiceImpl;
+import com.test.qlph.serviceimpl.EmployeeServiceImpl;
+import com.test.qlph.serviceimpl.MenuServiceImpl;
+import com.test.qlph.serviceimpl.RoomServiceImpl;
 
 import java.util.Scanner;
 
 public class Main {
 
     static Scanner sc = KaraokeConstant.sc;
-    static EmployeeService employeeService = new EmployeeService();
-    static RoomService roomService = new RoomService();
-    static MenuService menuService = new MenuService();
-    static BookingService bookingService = new BookingService();
+    static EmployeeService employeeService = new EmployeeServiceImpl();
+    static RoomService roomService = new RoomServiceImpl();
+    static MenuService menuService = new MenuServiceImpl();
+    static BookingService bookingService = new BookingServiceImpl();
 
     public static void main(String[] args) {
         int choice;
