@@ -66,8 +66,8 @@ public class MenuDTO {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MenuDTO menuDTO = (MenuDTO) o;
-        return Objects.equals(itemId, menuDTO.itemId);
+        MenuDTO temp = (MenuDTO) o;
+        return Objects.equals(itemId, temp.itemId);
     }
 
     @Override

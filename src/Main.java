@@ -7,12 +7,10 @@ import com.test.qlph.serviceimpl.BookingServiceImpl;
 import com.test.qlph.serviceimpl.EmployeeServiceImpl;
 import com.test.qlph.serviceimpl.MenuServiceImpl;
 import com.test.qlph.serviceimpl.RoomServiceImpl;
-
-import java.util.Scanner;
+import com.test.qlph.util.InputUtil;
 
 public class Main {
 
-    static Scanner sc = KaraokeConstant.sc;
     static EmployeeService employeeService = new EmployeeServiceImpl();
     static RoomService roomService = new RoomServiceImpl();
     static MenuService menuService = new MenuServiceImpl();
@@ -27,10 +25,7 @@ public class Main {
             System.out.println("3. Quan ly dat phong");
             System.out.println("4. Quan ly menu");
             System.out.println("0. Thoat");
-            System.out.print("Nhap: ");
-
-            choice = sc.nextInt();
-            sc.nextLine();
+            choice = InputUtil.inputInt("Nhap: ");
 
             switch (choice) {
                 case 1:
@@ -53,7 +48,7 @@ public class Main {
             }
         } while (choice != 0);
 
-        sc.close();
+        KaraokeConstant.sc.close();
     }
 
     private static void roomMenu() {
@@ -65,10 +60,7 @@ public class Main {
             System.out.println("3. Xoa phong hat");
             System.out.println("4. Danh sach phong hat");
             System.out.println("0. Thoat");
-            System.out.print("Nhap: ");
-
-            choice = sc.nextInt();
-            sc.nextLine();
+            choice = InputUtil.inputInt("Nhap: ");
 
             switch (choice) {
                 case 1:
@@ -101,10 +93,7 @@ public class Main {
             System.out.println("3. Xoa nhan vien");
             System.out.println("4. Danh sach nhan vien");
             System.out.println("0. Thoat");
-            System.out.print("Nhap: ");
-
-            choice = sc.nextInt();
-            sc.nextLine();
+            choice = InputUtil.inputInt("Nhap: ");
 
             switch (choice) {
                 case 1:
@@ -137,10 +126,7 @@ public class Main {
             System.out.println("3. Xoa dat phong");
             System.out.println("4. Danh sach dat phong");
             System.out.println("0. Thoat");
-            System.out.print("Nhap: ");
-
-            choice = sc.nextInt();
-            sc.nextLine();
+            choice = InputUtil.inputInt("Nhap: ");
 
             switch (choice) {
                 case 1:
@@ -173,10 +159,7 @@ public class Main {
             System.out.println("3. Xoa menu");
             System.out.println("4. Danh sach menu");
             System.out.println("0. Thoat");
-            System.out.print("Nhap: ");
-
-            choice = sc.nextInt();
-            sc.nextLine();
+            choice = InputUtil.inputInt("Nhap: ");
 
             switch (choice) {
                 case 1:

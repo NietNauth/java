@@ -76,8 +76,8 @@ public class BookingDTO {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        BookingDTO that = (BookingDTO) o;
-        return Objects.equals(bookingId, that.bookingId);
+        BookingDTO temp = (BookingDTO) o;
+        return Objects.equals(bookingId, temp.bookingId);
     }
 
     @Override

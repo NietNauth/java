@@ -2,7 +2,10 @@ package com.test.qlph.serviceimpl;
 
 import com.test.qlph.constant.KaraokeConstant;
 import com.test.qlph.dto.BookingDTO;
+import com.test.qlph.dto.RoomDTO;
 import com.test.qlph.service.BookingService;
+import com.test.qlph.service.RoomService;
+import com.test.qlph.util.InputUtil;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -10,6 +13,7 @@ import java.util.UUID;
 
 public class BookingServiceImpl implements BookingService {
     private static final String CODE_REGEX = "^HD\\d{3}$";
+    private final RoomService roomService = new RoomServiceImpl();
 
     @Override
     public Optional<BookingDTO> getByCode(String bookingCode) {
@@ -35,6 +39,42 @@ public class BookingServiceImpl implements BookingService {
                 return code;
             }
         }
+    }
+
+    private RoomDTO inputAvailableRoom(String currentRoomCode) {
+        while (true) {
+            String prompt = currentRoomCode == null
+                    ? "Nhap ma phong: "
+                    : "Nhap ma phong moi (Enter de giu: " + currentRoomCode + "): ";
+            System.out.print(prompt);
+            String code = KaraokeConstant.sc.nextLine().trim().toUpperCase();
+
+            if (code.isEmpty() && currentRoomCode != null) {
+                code = currentRoomCode;
+            }
+            if (code.isEmpty()) {
+                System.out.println("Ma phong khong duoc de trong");
+                continue;
+            }
+
+            Optional<RoomDTO> roomOpt = roomService.getByCode(code);
+            if (roomOpt.isEmpty()) {
+                System.out.println("Khong tim thay phong " + code);
+                continue;
+            }
+
+            RoomDTO room = roomOpt.get();
+            boolean isCurrentRoom = room.getRoomCode().equalsIgnoreCase(currentRoomCode);
+            if (Boolean.TRUE.equals(room.getOccupied()) && !isCurrentRoom) {
+                System.out.println("Phong " + code + " dang co khach, chon phong khac");
+                continue;
+            }
+            return room;
+        }
+    }
+
+    private void setRoomOccupied(String roomCode, boolean occupied) {
+        roomService.getByCode(roomCode).ifPresent(room -> room.setOccupied(occupied));
     }
 
     @Override
@@ -68,20 +108,21 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public void addBooking() {
         System.out.println("\n---Them dat phong---");
+        if (KaraokeConstant.listRoom.stream().allMatch(room -> Boolean.TRUE.equals(room.getOccupied()))) {
+            System.out.println("Khong con phong trong de dat");
+            return;
+        }
+
         UUID bookingId = UUID.randomUUID();
         String bookingCode = inputBookingCode();
+        RoomDTO room = inputAvailableRoom(null);
+        String customerId = InputUtil.inputString("Nhap ma khach hang").toUpperCase();
+        String bookingDate = InputUtil.inputDate("Nhap ngay dat");
+        String bookingTime = InputUtil.inputTime("Nhap gio dat");
 
-        System.out.print("Nhap ma phong: ");
-        String roomId = KaraokeConstant.sc.nextLine();
-        System.out.print("Nhap ma khach hang: ");
-        String customerId = KaraokeConstant.sc.nextLine();
-        System.out.print("Nhap ngay dat (VD: 12/11/2026): ");
-        String bookingDate = KaraokeConstant.sc.nextLine();
-        System.out.print("Nhap gio dat (VD: 19:30): ");
-        String bookingTime = KaraokeConstant.sc.nextLine();
-
-        BookingDTO bookingDTO = new BookingDTO(bookingId, bookingCode, roomId, customerId, bookingDate, bookingTime);
+        BookingDTO bookingDTO = new BookingDTO(bookingId, bookingCode, room.getRoomCode(), customerId, bookingDate, bookingTime);
         KaraokeConstant.listBooking.add(bookingDTO);
+        room.setOccupied(true);
         System.out.println("Dat phong thanh cong! (Ma hoa don: " + bookingCode + " | UUID: " + bookingId + ")");
     }
 
@@ -98,14 +139,18 @@ public class BookingServiceImpl implements BookingService {
         }
 
         BookingDTO bookingDTO = bookingOpt.get();
-        System.out.print("Nhap ma phong moi: ");
-        bookingDTO.setRoomId(KaraokeConstant.sc.nextLine());
-        System.out.print("Nhap ma khach hang moi: ");
-        bookingDTO.setCustomerId(KaraokeConstant.sc.nextLine());
-        System.out.print("Nhap ngay dat moi: ");
-        bookingDTO.setBookingDate(KaraokeConstant.sc.nextLine());
-        System.out.print("Nhap gio dat moi: ");
-        bookingDTO.setBookingTime(KaraokeConstant.sc.nextLine());
+        String oldRoomCode = bookingDTO.getRoomId();
+        RoomDTO newRoom = inputAvailableRoom(oldRoomCode);
+        String customerId = InputUtil.inputString("Nhap ma khach hang moi", bookingDTO.getCustomerId()).toUpperCase();
+        String bookingDate = InputUtil.inputDate("Nhap ngay dat moi", bookingDTO.getBookingDate());
+        String bookingTime = InputUtil.inputTime("Nhap gio dat moi", bookingDTO.getBookingTime());
+
+        setRoomOccupied(oldRoomCode, false);
+        newRoom.setOccupied(true);
+        bookingDTO.setRoomId(newRoom.getRoomCode());
+        bookingDTO.setCustomerId(customerId);
+        bookingDTO.setBookingDate(bookingDate);
+        bookingDTO.setBookingTime(bookingTime);
 
         System.out.println("Cap nhat dat phong thanh cong");
     }
@@ -122,7 +167,14 @@ public class BookingServiceImpl implements BookingService {
             return;
         }
 
-        KaraokeConstant.listBooking.remove(bookingOpt.get());
+        BookingDTO bookingDTO = bookingOpt.get();
+        if (!InputUtil.confirm("Ban chac chan muon xoa don " + bookingDTO.getBookingCode() + "?")) {
+            System.out.println("Da huy xoa");
+            return;
+        }
+
+        KaraokeConstant.listBooking.remove(bookingDTO);
+        setRoomOccupied(bookingDTO.getRoomId(), false);
         System.out.println("Xoa don dat phong thanh cong");
     }
 }

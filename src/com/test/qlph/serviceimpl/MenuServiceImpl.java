@@ -3,6 +3,7 @@ package com.test.qlph.serviceimpl;
 import com.test.qlph.constant.KaraokeConstant;
 import com.test.qlph.dto.MenuDTO;
 import com.test.qlph.service.MenuService;
+import com.test.qlph.util.InputUtil;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -10,6 +11,7 @@ import java.util.UUID;
 
 public class MenuServiceImpl implements MenuService {
     private static final String CODE_REGEX = "^MN\\d{3}$";
+    private static final String[] CATEGORIES = {"Do an", "Do uong", "Khac"};
 
     @Override
     public Optional<MenuDTO> getByCode(String itemCode) {
@@ -70,13 +72,9 @@ public class MenuServiceImpl implements MenuService {
         System.out.println("\n---Them mon vao menu---");
         UUID itemId = UUID.randomUUID();
         String itemCode = inputMenuCode();
-
-        System.out.print("Nhap ten mon: ");
-        String itemName = KaraokeConstant.sc.nextLine();
-        System.out.print("Nhap loai mon (Do an / Do uong / Khac): ");
-        String itemCategory = KaraokeConstant.sc.nextLine();
-        System.out.print("Nhap gia tien: ");
-        Long itemPrice = Long.parseLong(KaraokeConstant.sc.nextLine());
+        String itemName = InputUtil.inputString("Nhap ten mon");
+        String itemCategory = InputUtil.inputChoice("Chon loai mon", CATEGORIES);
+        Long itemPrice = InputUtil.inputPositiveLong("Nhap gia tien");
 
         MenuDTO menuDTO = new MenuDTO(itemId, itemCode, itemName, itemCategory, itemPrice);
         KaraokeConstant.listMenu.add(menuDTO);
@@ -96,12 +94,9 @@ public class MenuServiceImpl implements MenuService {
         }
 
         MenuDTO menuDTO = menuOpt.get();
-        System.out.print("Nhap ten mon moi: ");
-        menuDTO.setItemName(KaraokeConstant.sc.nextLine());
-        System.out.print("Nhap loai mon moi: ");
-        menuDTO.setItemCategory(KaraokeConstant.sc.nextLine());
-        System.out.print("Nhap gia moi: ");
-        menuDTO.setItemPrice(Long.parseLong(KaraokeConstant.sc.nextLine()));
+        menuDTO.setItemName(InputUtil.inputString("Nhap ten mon moi", menuDTO.getItemName()));
+        menuDTO.setItemCategory(InputUtil.inputChoice("Chon loai mon moi", CATEGORIES, menuDTO.getItemCategory()));
+        menuDTO.setItemPrice(InputUtil.inputPositiveLong("Nhap gia moi", menuDTO.getItemPrice()));
 
         System.out.println("Cap nhat mon thanh cong");
     }
@@ -118,7 +113,13 @@ public class MenuServiceImpl implements MenuService {
             return;
         }
 
-        KaraokeConstant.listMenu.remove(menuOpt.get());
+        MenuDTO menuDTO = menuOpt.get();
+        if (!InputUtil.confirm("Ban chac chan muon xoa mon " + menuDTO.getItemCode() + "?")) {
+            System.out.println("Da huy xoa");
+            return;
+        }
+
+        KaraokeConstant.listMenu.remove(menuDTO);
         System.out.println("Xoa mon thanh cong");
     }
 }

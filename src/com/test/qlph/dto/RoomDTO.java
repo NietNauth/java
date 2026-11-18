@@ -66,8 +66,8 @@ public class RoomDTO {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        RoomDTO roomDTO = (RoomDTO) o;
-        return Objects.equals(roomId, roomDTO.roomId);
+        RoomDTO temp = (RoomDTO) o;
+        return Objects.equals(roomId, temp.roomId);
     }
 
     @Override

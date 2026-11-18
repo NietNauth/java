@@ -3,6 +3,7 @@ package com.test.qlph.serviceimpl;
 import com.test.qlph.constant.KaraokeConstant;
 import com.test.qlph.dto.RoomDTO;
 import com.test.qlph.service.RoomService;
+import com.test.qlph.util.InputUtil;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -70,11 +71,8 @@ public class RoomServiceImpl implements RoomService {
         System.out.println("\n---Them phong hat---");
         UUID roomId = UUID.randomUUID();
         String roomCode = inputRoomCode();
-
-        System.out.print("Nhap ten phong: ");
-        String roomName = KaraokeConstant.sc.nextLine();
-        System.out.print("Nhap gia phong moi gio: ");
-        Long roomPrice = Long.parseLong(KaraokeConstant.sc.nextLine());
+        String roomName = InputUtil.inputString("Nhap ten phong");
+        Long roomPrice = InputUtil.inputPositiveLong("Nhap gia phong moi gio");
 
         RoomDTO roomDTO = new RoomDTO(roomId, roomCode, roomName, roomPrice, false);
         KaraokeConstant.listRoom.add(roomDTO);
@@ -94,10 +92,8 @@ public class RoomServiceImpl implements RoomService {
         }
 
         RoomDTO roomDTO = roomOpt.get();
-        System.out.print("Nhap ten phong moi: ");
-        roomDTO.setRoomName(KaraokeConstant.sc.nextLine());
-        System.out.print("Nhap gia phong moi: ");
-        roomDTO.setRoomPrice(Long.parseLong(KaraokeConstant.sc.nextLine()));
+        roomDTO.setRoomName(InputUtil.inputString("Nhap ten phong moi", roomDTO.getRoomName()));
+        roomDTO.setRoomPrice(InputUtil.inputPositiveLong("Nhap gia phong moi", roomDTO.getRoomPrice()));
 
         System.out.println("Cap nhat phong thanh cong");
     }
@@ -114,7 +110,18 @@ public class RoomServiceImpl implements RoomService {
             return;
         }
 
-        KaraokeConstant.listRoom.remove(roomOpt.get());
+        RoomDTO roomDTO = roomOpt.get();
+        if (Boolean.TRUE.equals(roomDTO.getOccupied())) {
+            System.out.println("Phong dang co khach, khong the xoa");
+            return;
+        }
+
+        if (!InputUtil.confirm("Ban chac chan muon xoa phong " + roomDTO.getRoomCode() + "?")) {
+            System.out.println("Da huy xoa");
+            return;
+        }
+
+        KaraokeConstant.listRoom.remove(roomDTO);
         System.out.println("Xoa phong thanh cong");
     }
 }

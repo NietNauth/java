@@ -86,8 +86,8 @@ public class EmployeeDTO {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        EmployeeDTO that = (EmployeeDTO) o;
-        return Objects.equals(employeeId, that.employeeId);
+        EmployeeDTO temp = (EmployeeDTO) o;
+        return Objects.equals(employeeId, temp.employeeId);
     }
 
     @Override

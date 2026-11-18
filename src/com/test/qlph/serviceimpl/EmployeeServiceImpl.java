@@ -3,6 +3,7 @@ package com.test.qlph.serviceimpl;
 import com.test.qlph.constant.KaraokeConstant;
 import com.test.qlph.dto.EmployeeDTO;
 import com.test.qlph.service.EmployeeService;
+import com.test.qlph.util.InputUtil;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -70,17 +71,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         System.out.println("\n---Them nhan vien ---");
         UUID employeeId = UUID.randomUUID();
         String employeeCode = inputEmployeeCode();
-
-        System.out.print("Nhap ten: ");
-        String employeeName = KaraokeConstant.sc.nextLine();
-        System.out.print("Nhap SDT: ");
-        String employeePhone = KaraokeConstant.sc.nextLine();
-        System.out.print("Nhap dia chi: ");
-        String employeeAddress = KaraokeConstant.sc.nextLine();
-        System.out.print("Nhap email: ");
-        String employeeEmail = KaraokeConstant.sc.nextLine();
-        System.out.print("Nhap luong: ");
-        Long employeeSalary = Long.parseLong(KaraokeConstant.sc.nextLine());
+        String employeeName = InputUtil.inputString("Nhap ten");
+        String employeePhone = InputUtil.inputPhone("Nhap SDT");
+        String employeeAddress = InputUtil.inputString("Nhap dia chi");
+        String employeeEmail = InputUtil.inputEmail("Nhap email");
+        Long employeeSalary = InputUtil.inputPositiveLong("Nhap luong");
 
         EmployeeDTO employeeDTO = new EmployeeDTO(employeeId, employeeCode, employeeName, employeePhone, employeeAddress, employeeEmail, employeeSalary);
         KaraokeConstant.listEmployee.add(employeeDTO);
@@ -100,16 +95,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         EmployeeDTO employeeDTO = employeeDTOOptional.get();
-        System.out.print("Nhap ten moi: ");
-        employeeDTO.setEmployeeName(KaraokeConstant.sc.nextLine());
-        System.out.print("Nhap dia chi moi: ");
-        employeeDTO.setEmployeeAddress(KaraokeConstant.sc.nextLine());
-        System.out.print("Nhap SDT moi: ");
-        employeeDTO.setEmployeePhone(KaraokeConstant.sc.nextLine());
-        System.out.print("Nhap email moi: ");
-        employeeDTO.setEmployeeEmail(KaraokeConstant.sc.nextLine());
-        System.out.print("Nhap luong moi: ");
-        employeeDTO.setEmployeeSalary(Long.parseLong(KaraokeConstant.sc.nextLine()));
+        employeeDTO.setEmployeeName(InputUtil.inputString("Nhap ten moi", employeeDTO.getEmployeeName()));
+        employeeDTO.setEmployeeAddress(InputUtil.inputString("Nhap dia chi moi", employeeDTO.getEmployeeAddress()));
+        employeeDTO.setEmployeePhone(InputUtil.inputPhone("Nhap SDT moi", employeeDTO.getEmployeePhone()));
+        employeeDTO.setEmployeeEmail(InputUtil.inputEmail("Nhap email moi", employeeDTO.getEmployeeEmail()));
+        employeeDTO.setEmployeeSalary(InputUtil.inputPositiveLong("Nhap luong moi", employeeDTO.getEmployeeSalary()));
 
         System.out.println("Cap nhat nhan vien thanh cong");
     }
@@ -126,7 +116,13 @@ public class EmployeeServiceImpl implements EmployeeService {
             return;
         }
 
-        KaraokeConstant.listEmployee.remove(employeeDTOOptional.get());
+        EmployeeDTO employeeDTO = employeeDTOOptional.get();
+        if (!InputUtil.confirm("Ban chac chan muon xoa nhan vien " + employeeDTO.getEmployeeCode() + "?")) {
+            System.out.println("Da huy xoa");
+            return;
+        }
+
+        KaraokeConstant.listEmployee.remove(employeeDTO);
         System.out.println("Xoa nhan vien thanh cong");
     }
 }
